@@ -45,6 +45,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         var filterBtn = UIButton()
         filterBtn.bounds = CGRectMake(0, 0, 40, 20)
         filterBtn.setTitle("Filter", forState: UIControlState.Normal)
+        filterBtn.addTarget(self, action: "presentFilter", forControlEvents: UIControlEvents.TouchUpInside)
         var leftBarItem = UIBarButtonItem(customView: filterBtn)
         navigationItem.leftBarButtonItem = leftBarItem
         
@@ -58,6 +59,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func presentFilter() {
+        performSegueWithIdentifier("toFilter", sender: self)
+        //self.navigationController?.performSegueWithIdentifier("toFilter", sender: self)
     }
     
     func searchWithTerm(term :String) {
