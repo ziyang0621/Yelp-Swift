@@ -23,6 +23,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var businesses:[NSDictionary]=[]
     
+    var searchText = ""
+    
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -30,7 +32,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view, typically from a nib.
         client = YelpClient(consumerKey: yelpConsumerKey, consumerSecret: yelpConsumerSecret, accessToken: yelpToken, accessSecret: yelpTokenSecret)
         
         tableView.dataSource = self
@@ -41,6 +42,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         searchBar.delegate = self
         
         navigationItem.titleView = searchBar
+        
+        for subView in searchBar.subviews {
+            if(subView.conformsToProtocol(NSProtocolFromString("UITextInputTraits"))) {
+                var sv = subView as UITextField
+                sv.returnKeyType = UIReturnKeyType.Search
+            }
+        }
         
         var filterBtn = UIButton()
         filterBtn.bounds = CGRectMake(0, 0, 40, 20)
@@ -63,7 +71,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func presentFilter() {
         performSegueWithIdentifier("toFilter", sender: self)
-        //self.navigationController?.performSegueWithIdentifier("toFilter", sender: self)
     }
     
     func searchWithTerm(term :String) {
@@ -79,8 +86,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         searchWithTerm(searchText)
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchText = searchText
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
