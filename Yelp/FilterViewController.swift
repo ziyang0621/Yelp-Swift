@@ -23,15 +23,22 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var cancelBtn = UIButton()
+        cancelBtn.bounds = CGRectMake(0, 0, 60, 20)
+        cancelBtn.setTitle("Cancel", forState: UIControlState.Normal)
+        cancelBtn.addTarget(self, action: "cancelFilter", forControlEvents: UIControlEvents.TouchUpInside)
+        var leftBarItem = UIBarButtonItem(customView: cancelBtn)
+        
         var filterBtn = UIButton()
         filterBtn.bounds = CGRectMake(0, 0, 60, 20)
-        filterBtn.setTitle("Cancel", forState: UIControlState.Normal)
-        filterBtn.addTarget(self, action: "cancelFilter", forControlEvents: UIControlEvents.TouchUpInside)
-        var leftBarItem = UIBarButtonItem(customView: filterBtn)
-        
+        filterBtn.setTitle("Filter", forState: UIControlState.Normal)
+        filterBtn.addTarget(self, action: "applyFilter", forControlEvents: UIControlEvents.TouchUpInside)
+        var rightBarItem = UIBarButtonItem(customView: filterBtn)
+
         var naviItem = UINavigationItem()
         naviItem.title = "Filters"
         naviItem.leftBarButtonItem = leftBarItem
+        naviItem.rightBarButtonItem = rightBarItem
         naviBar.items = [naviItem]
 
         naviBar.delegate = self
@@ -41,6 +48,8 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
         tableView.registerNib(UINib(nibName: "PopularCell", bundle: nil), forCellReuseIdentifier: "popularCell")
         tableView.registerNib(UINib(nibName: "DistanceCell", bundle: nil), forCellReuseIdentifier: "distanceCell")
         tableView.registerNib(UINib(nibName: "SortedCell", bundle: nil), forCellReuseIdentifier: "sortedCell")
+        tableView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellReuseIdentifier: "categoryCell")
+        tableView.registerNib(UINib(nibName: "SeeAllCell", bundle: nil), forCellReuseIdentifier: "seeAllCell")
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,7 +61,10 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
         dismissViewControllerAnimated(true, completion: nil)
     }
     
-    
+    func applyFilter() {
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+
     func positionForBar(bar: UIBarPositioning) -> UIBarPosition {
         return UIBarPosition.TopAttached
     }
@@ -87,11 +99,18 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 || section == 2{
+        if section == 1 || section == 2 {
             if let expanded = isExpended[section] {
                 return expanded ? 3 : 1
             } else {
                 return 1
+            }
+        }
+        else if section == 3 {
+            if let expended = isExpended[section] {
+                return expended ? 5 : 4
+            } else {
+                return 4
             }
         }
         return 1
@@ -102,6 +121,7 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
             var cell = tableView.dequeueReusableCellWithIdentifier("popularCell") as PopularCell
             return cell
         }
+            
         else if indexPath.section == 1 {
             var cell = tableView.dequeueReusableCellWithIdentifier("distanceCell") as DistanceCell
 
@@ -165,9 +185,32 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
             
             return cell
         }
-        else {
-            var cell = tableView.dequeueReusableCellWithIdentifier("distanceCell") as DistanceCell
-            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
+            
+        else  {
+            var cell = tableView.dequeueReusableCellWithIdentifier("categoryCell") as CategoryCell
+            
+            if indexPath.row == 0 {
+                cell.categoryLabel.text = "Amusement Parks"
+            }
+            else if indexPath.row == 1 {
+                cell.categoryLabel.text = "Badminton"
+            }
+            else if indexPath.row == 2 {
+                cell.categoryLabel.text = "Climbing"
+            }
+            else if indexPath.row == 3 {
+                if tableView.numberOfRowsInSection(indexPath.section) == 5 {
+                    cell.categoryLabel.text = "Day Camps"
+                }
+                else {
+                    var seeAllCell = tableView.dequeueReusableCellWithIdentifier("seeAllCell") as SeeAllCell
+                    return seeAllCell
+                }
+            }
+            else {
+                cell.categoryLabel.text = "Fencing Clubs"
+            }
+            
             return cell
         }
     }
@@ -191,6 +234,19 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
                 isExpended[indexPath.section] = true
             }
             tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
+        }
+        else if indexPath.section == 3  {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            
+            if indexPath.row == 3 && tableView.numberOfRowsInSection(indexPath.section) == 4 {
+                if let expanded = isExpended[indexPath.section] {
+                    isExpended[indexPath.section] = !expanded
+                } else {
+                    isExpended[indexPath.section] = true
+                }
+                tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: UITableViewRowAnimation.Fade)
+
+            }
         }
         
     }
