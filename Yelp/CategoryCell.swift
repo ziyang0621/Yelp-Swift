@@ -11,6 +11,7 @@ import UIKit
 class CategoryCell: UITableViewCell {
 
     @IBOutlet weak var categoryLabel: UILabel!
+    @IBOutlet weak var categorySwitch: UISwitch!
     
     override func awakeFromNib() {
         super.awakeFromNib()

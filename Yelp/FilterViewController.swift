@@ -8,17 +8,25 @@
 
 import UIKit
 
+protocol FilterViewControllerDelegate {
+    func applyFilterSearch(controller:FilterViewController,deal:Bool, radius:Int, sort:Int, category:String)
+}
+
 class FilterViewController: UIViewController, UINavigationBarDelegate, UITableViewDelegate, UITableViewDataSource{
     
     @IBOutlet weak var naviBar: UINavigationBar!
     
     @IBOutlet weak var tableView: UITableView!
     
+    var delegate:FilterViewControllerDelegate!
+    
     var isExpended: [Int:Bool]! = [Int:Bool]()
     
     var selectedDistance = 0
     
     var selectedSort = 0
+    
+    var categoryMap :[String:String]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,6 +48,8 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
         naviItem.leftBarButtonItem = leftBarItem
         naviItem.rightBarButtonItem = rightBarItem
         naviBar.items = [naviItem]
+        
+        categoryMap = ["Amusement Parks" : "amusementparks", "Badminton" : "badminton", "Climbing" : "climbing", "Day Camps" : "daycamps", "Fencing Clubs" : "fencing"]
 
         naviBar.delegate = self
         tableView.delegate = self
@@ -62,6 +72,36 @@ class FilterViewController: UIViewController, UINavigationBarDelegate, UITableVi
     }
     
     func applyFilter() {
+        var deal = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) as PopularCell
+        
+        var radius = -1
+        if selectedDistance == 0 {
+            radius = -1
+        } else if selectedDistance == 1 {
+            radius = 1
+        } else {
+            radius = 5
+        }
+        
+        var categories = ""
+        var addedCategory = 0
+        var numOfRow = ((tableView.numberOfRowsInSection(3) == 5) ? 5 : 3)
+        for index in 0...(numOfRow-1)  {
+            var categoryCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: index, inSection: 3)) as CategoryCell
+            if categoryCell.categorySwitch.on {
+                var text = categoryCell.categoryLabel.text
+                var key = categoryMap[text!]
+                if (addedCategory == 0) {
+                    categories += key!
+                }
+                else {
+                    categories += "," + key!
+                }
+                addedCategory++
+            }
+        }
+        
+        delegate.applyFilterSearch(self, deal: deal.dealSwitch.on, radius: radius, sort: selectedSort, category: categories)
         dismissViewControllerAnimated(true, completion: nil)
     }
 

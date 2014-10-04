@@ -34,6 +34,7 @@
             </tableViewCellContentView>
             <connections>
                 <outlet property="categoryLabel" destination="FMQ-xz-MS3" id="UGo-6F-wib"/>
+                <outlet property="categorySwitch" destination="J86-HF-Q7h" id="PaN-9Q-96b"/>
             </connections>
             <point key="canvasLocation" x="275" y="214"/>
         </tableViewCell>

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, FilterViewControllerDelegate{
     var client: YelpClient!
     
     // You can register for Yelp API keys here: http://www.yelp.com/developers/manage_api_keys
@@ -62,6 +62,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         spaceBtn.alpha = 0
         var rightBarItem = UIBarButtonItem(customView: spaceBtn)
         navigationItem.rightBarButtonItem = rightBarItem
+        
+        searchWithTerm("")
     }
     
     override func didReceiveMemoryWarning() {
@@ -73,14 +75,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         performSegueWithIdentifier("toFilter", sender: self)
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if (segue.identifier == "toFilter") {
+            let detailVC = segue.destinationViewController as FilterViewController
+            detailVC.delegate = self
+        }
+    }
+
+    func applyFilterSearch(controller: FilterViewController, deal: Bool, radius: Int, sort: Int, category: String) {
+        client.searchWithTerm(searchBar.text, deal: deal, radius :radius, sort: sort, categories: category, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+            println(response)
+            var total = response["total"] as Int
+            if total != 0 {
+                self.businesses = response["businesses"] as [NSDictionary]
+                var business :NSDictionary = NSDictionary()
+                business = self.businesses[0]
+            } else {
+                self.businesses.removeAll(keepCapacity: false)
+            }
+            self.tableView.reloadData()
+            }) { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                println(error)
+        }    }
+
+    
     func searchWithTerm(term :String) {
         client.searchWithTerm(term, success: { (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
             println(response)
-            self.businesses = response["businesses"] as [NSDictionary]
-            var business :NSDictionary = NSDictionary()
-            business = self.businesses[0]
+            var total = response["total"] as Int
+            if total != 0 {
+                self.businesses = response["businesses"] as [NSDictionary]
+                var business :NSDictionary = NSDictionary()
+                business = self.businesses[0]
+            } else {
+                self.businesses.removeAll(keepCapacity: false)
+            }
             self.tableView.reloadData()
-            
             }) { (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 println(error)
         }
@@ -118,7 +148,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.locationLabel.text? += city!
         
         var distance = business["distance"] as? Float
-        distance = distance! * 0.000189
+        distance = distance! * 0.000621371
         cell.distanceLabel.text = String(format: "%.02f", distance!) + " mi"
         
         var categ = business["categories"] as? NSArray
