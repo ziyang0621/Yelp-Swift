@@ -1,5 +1,5 @@
 
-# RottenTomatoes Box Office Demo
+# Yelp Search/Filter Demo
 
 This is an iOS Swift demo application for displaying the Yelp search and filter using the [Yelp API](http://www.yelp.com/developers/documentation/v2/search_api). This application uses [CodePath's Swift Yelp client](https://github.com/thecodepath/ios_yelp_swift) to to make unauthenticated requests to their search API.
 
