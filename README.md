@@ -10,7 +10,7 @@ Completed user stories:
  * [x] Required: Table rows should be dynamic height according to the content height
  * [x] Required: Custom cells should have the proper Auto Layout constraints
  * [x] Required: Search bar should be in the navigation bar (doesn't have to expand to show location like the real Yelp app does).
- * [x] Required: The filters you should actually have are: category, sort (best match, distance, highest rated), radius (meters), deals (on/off).
+ * [x] Required: User can pull to refresh
  * [x] Required: The filters table should be organized into sections as in the mock.
  * [x] Required: You can use the default UISwitch for on/off states.
  * [x] Required: Radius filter should expand as in the real Yelp app
@@ -24,8 +24,6 @@ Stories not implemented:
  * Optional: Implement map view of restaurant results
  * Optional: implement a custom switch
  * Optional: Implement the restaurant detail page
-
-Walkthrough of most of the  user stories (Network error not shown):
 
 ![Video Walkthrough](yelp.gif)
 
